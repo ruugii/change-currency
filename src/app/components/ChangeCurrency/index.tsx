@@ -51,20 +51,20 @@ export default function ChangeCurrency() {
   }, [usd])
 
   return (
-    <div className="gap-3">
-      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3">
+    <div className="gap-3 w-1/4">
+      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3 flex content-center justify-center items-center">
         <p>
           FECHA DEL CAMBIO: {date.getDate()}-{date.getMonth() + 1}-{date.getFullYear()} | {date.getHours()}:{date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}:{date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()} (UTC + 1)
         </p>
       </div>
-      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3">
+      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3 flex content-center justify-center items-center">
         <p>
-          1€ = {usd}$
+          1€ = {usd.toFixed(2)}$
         </p>
       </div>
-      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3">
+      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3 flex content-center justify-center items-center">
         <p>
-          1$ = {eur}€
+          1$ = {eur.toFixed(2)}€
         </p>
       </div>
     </div>
