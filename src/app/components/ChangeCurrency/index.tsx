@@ -3,7 +3,7 @@
 import getChange from "@/app/api/freecurrencyapi/getChange"
 import { useEffect, useState } from "react"
 
-export default function ChangeCurrency () {
+export default function ChangeCurrency() {
 
   const [token] = useState(process.env.NEXT_PUBLIC_API_KEY ?? '')
   const [from] = useState('EUR')
@@ -13,14 +13,32 @@ export default function ChangeCurrency () {
 
   const [date, setDate] = useState<Date>(new Date())
 
+  const [firstRender, setFirstRender] = useState<boolean>(true)
+  const [timeRefreshInSeg] = useState<number>(60)
 
   useEffect(() => {
-    getChange(token, from, to)
-      .then((r) => {
-        setUsd(r.data.USD)
-        setDate(new Date())
-      })
-  }, [token, from, to])
+    const getData = () => {
+      getChange(token, from, to)
+        .then((r) => {
+          setUsd(r.data.USD);
+          setDate(new Date());
+          setFirstRender(false);
+        });
+    };
+  
+    // Fetch data immediately if it's the first render
+    if (firstRender) {
+      getData();
+    }
+  
+    // Set interval for fetching data every 5 seconds
+    const intervalId = setInterval(() => {
+      getData();
+    }, (timeRefreshInSeg * 1000));
+  
+    // Cleanup interval on unmount or dependencies change
+    return () => clearInterval(intervalId);
+  }, [token, from, to, firstRender]);
 
   useEffect(() => {
     /*
@@ -29,26 +47,26 @@ export default function ChangeCurrency () {
 
       1*USD/1
     */
-    setEur(1/usd)
+    setEur(1 / usd)
   }, [usd])
 
   return (
-    <>
-      <div className=" bg-amber-50 text-black rounded-full px-2 py-4">
+    <div className="gap-3">
+      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3">
         <p>
-          FECHA DEL CAMBIO: {date.getDate()}-{date.getMonth() + 1}-{date.getFullYear()} | {date.getHours()}:{date.getMinutes()< 10 ? `0${date.getMinutes()}` : date.getMinutes()}:{date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()} (UTC + 1)
+          FECHA DEL CAMBIO: {date.getDate()}-{date.getMonth() + 1}-{date.getFullYear()} | {date.getHours()}:{date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}:{date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()} (UTC + 1)
         </p>
       </div>
-      <div className=" bg-amber-50 text-black rounded-full px-2 py-4">
+      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3">
         <p>
           1€ = {usd}$
         </p>
       </div>
-      <div className=" bg-amber-50 text-black rounded-full px-2 py-4">
+      <div className=" bg-amber-50 text-black rounded-full px-2 py-4 my-3">
         <p>
           1$ = {eur}€
         </p>
       </div>
-    </>
+    </div>
   )
 }
